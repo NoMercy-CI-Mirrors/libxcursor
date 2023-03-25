@@ -172,7 +172,7 @@ _XcursorThemeInherits (const char *full)
     if (!full)
 	return NULL;
 
-    f = fopen (full, "r");
+    f = fopen (full, "r" FOPEN_CLOEXEC);
     if (f)
     {
 	while (fgets (line, sizeof (line), f))
@@ -254,7 +254,7 @@ XcursorScanTheme (const char *theme, const char *name)
 		full = _XcursorBuildFullname (dir, "cursors", name);
 		if (full)
 		{
-		    f = fopen (full, "r");
+		    f = fopen (full, "r" FOPEN_CLOEXEC);
 		    free (full);
 		}
 		if (!f && inherits[d + 1].line == NULL)
