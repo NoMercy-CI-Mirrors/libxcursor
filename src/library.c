@@ -159,6 +159,12 @@ _XcursorNextPath (const char *path)
     return colon + 1;
 }
 
+/*
+ * _XcursorThemeInherits, XcursorWhite, & XcursorSep are copied in
+ * libxcb-cursor/cursor/load_cursor.c.  Please update that copy to
+ * include any changes made to the code for those here.
+ */
+
 #define XcursorWhite(c)	((c) == ' ' || (c) == '\t' || (c) == '\n')
 #define XcursorSep(c) ((c) == ';' || (c) == ',')
 
