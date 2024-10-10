@@ -23,6 +23,7 @@
 #include "xcursorint.h"
 #include <stdlib.h>
 #include <string.h>
+#include <sys/param.h>
 
 XcursorImage *
 XcursorImageCreate (int width, int height)
@@ -624,6 +625,34 @@ _XcursorWriteComment (XcursorFile	    *file,
     return XcursorTrue;
 }
 
+static XcursorImage *
+_XcursorResizeImage (XcursorImage *src, int size)
+{
+    double scale = (double) size / src->size;
+    XcursorImage *dest = XcursorImageCreate ((int) (src->width * scale), (int) (src->height * scale));
+    if (!dest)
+	return NULL;
+
+    dest->size = size;
+    dest->xhot = (int) (src->xhot * scale);
+    dest->yhot = (int) (src->yhot * scale);
+    dest->delay = src->delay;
+
+    for (int dest_y = 0; dest_y < dest->height; dest_y++)
+    {
+	int src_y = MIN((int) (dest_y / scale), src->height - 1);
+	XcursorPixel *src_row = src->pixels + src_y * src->width;
+	XcursorPixel *dest_row = dest->pixels + dest_y * dest->width;
+	for (int dest_x = 0; dest_x < dest->width; dest_x++)
+	{
+	    int src_x = MIN((int) (dest_x / scale), src->width - 1);
+	    dest_row[dest_x] = src_row[src_x];
+	}
+    }
+
+    return dest;
+}
+
 XcursorImage *
 XcursorXcFileLoadImage (XcursorFile *file, int size)
 {
@@ -646,6 +675,19 @@ XcursorXcFileLoadImage (XcursorFile *file, int size)
 	return NULL;
     image = _XcursorReadImage (file, fileHeader, toc);
     _XcursorFileHeaderDestroy (fileHeader);
+
+    if (image->size != size)
+    {
+	XcursorImage *resized_image = _XcursorResizeImage (image, size);
+	if (!resized_image)
+	{
+	    XcursorImageDestroy (image);
+	    return NULL;
+	}
+	XcursorImageDestroy (image);
+	image = resized_image;
+    }
+
     return image;
 }
 
@@ -657,6 +699,7 @@ XcursorXcFileLoadImages (XcursorFile *file, int size)
     int			nsize;
     XcursorImages	*images;
     int			n;
+    XcursorImage        *image;
 
     if (!file || size < 0)
 	return NULL;
@@ -680,10 +723,22 @@ XcursorXcFileLoadImages (XcursorFile *file, int size)
 	int toc = _XcursorFindImageToc (fileHeader, bestSize, n);
 	if (toc < 0)
 	    break;
-	images->images[images->nimage] = _XcursorReadImage (file, fileHeader,
+	image = _XcursorReadImage (file, fileHeader,
 							    toc);
-	if (!images->images[images->nimage])
+	if (!image)
 	    break;
+	if (image->size != size)
+	{
+	    XcursorImage *resized_image = _XcursorResizeImage (image, size);
+	    if (!resized_image)
+	    {
+		XcursorImageDestroy (image);
+	        break;
+	    }	    
+	    XcursorImageDestroy (image);
+	    image = resized_image;
+	}
+	images->images[images->nimage] = image;
 	images->nimage++;
     }
     _XcursorFileHeaderDestroy (fileHeader);
