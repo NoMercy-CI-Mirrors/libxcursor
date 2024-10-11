@@ -23,7 +23,6 @@
 #include "xcursorint.h"
 #include <stdlib.h>
 #include <string.h>
-#include <sys/param.h>
 
 XcursorImage *
 XcursorImageCreate (int width, int height)
@@ -640,12 +639,12 @@ _XcursorResizeImage (XcursorImage *src, int size)
 
     for (int dest_y = 0; dest_y < dest->height; dest_y++)
     {
-	int src_y = MIN((int) (dest_y / scale), src->height - 1);
+	int src_y = dest_y / scale;
 	XcursorPixel *src_row = src->pixels + src_y * src->width;
 	XcursorPixel *dest_row = dest->pixels + dest_y * dest->width;
 	for (int dest_x = 0; dest_x < dest->width; dest_x++)
 	{
-	    int src_x = MIN((int) (dest_x / scale), src->width - 1);
+	    int src_x = dest_x / scale;
 	    dest_row[dest_x] = src_row[src_x];
 	}
     }
