@@ -627,25 +627,25 @@ _XcursorWriteComment (XcursorFile	    *file,
 static XcursorImage *
 _XcursorResizeImage (XcursorImage *src, int size)
 {
-    int dest_y, dest_x;
+    XcursorDim dest_y, dest_x;
     double scale = (double) size / src->size;
     XcursorImage *dest = XcursorImageCreate ((int) (src->width * scale), (int) (src->height * scale));
     if (!dest)
 	return NULL;
 
-    dest->size = size;
-    dest->xhot = (int) (src->xhot * scale);
-    dest->yhot = (int) (src->yhot * scale);
+    dest->size = (XcursorDim) size;
+    dest->xhot = (XcursorDim) (src->xhot * scale);
+    dest->yhot = (XcursorDim) (src->yhot * scale);
     dest->delay = src->delay;
 
     for (dest_y = 0; dest_y < dest->height; dest_y++)
     {
-	int src_y = dest_y / scale;
-	XcursorPixel *src_row = src->pixels + src_y * src->width;
-	XcursorPixel *dest_row = dest->pixels + dest_y * dest->width;
+	XcursorDim src_y = (XcursorDim) (dest_y / scale);
+	XcursorPixel *src_row = src->pixels + (src_y * src->width);
+	XcursorPixel *dest_row = dest->pixels + (dest_y * dest->width);
 	for (dest_x = 0; dest_x < dest->width; dest_x++)
 	{
-	    int src_x = dest_x / scale;
+	    XcursorDim src_x = (XcursorDim) (dest_x / scale);
 	    dest_row[dest_x] = src_row[src_x];
 	}
     }
@@ -676,7 +676,7 @@ XcursorXcFileLoadImage (XcursorFile *file, int size)
     image = _XcursorReadImage (file, fileHeader, toc);
     _XcursorFileHeaderDestroy (fileHeader);
 
-    if (image->size != size)
+    if (image->size != (XcursorDim) size)
     {
 	XcursorImage *resized_image = _XcursorResizeImage (image, size);
 	if (!resized_image)
@@ -727,14 +727,14 @@ XcursorXcFileLoadImages (XcursorFile *file, int size)
 							    toc);
 	if (!image)
 	    break;
-	if (image->size != size)
+	if (image->size != (XcursorDim) size)
 	{
 	    XcursorImage *resized_image = _XcursorResizeImage (image, size);
 	    if (!resized_image)
 	    {
 		XcursorImageDestroy (image);
 	        break;
-	    }	    
+	    }
 	    XcursorImageDestroy (image);
 	    image = resized_image;
 	}
