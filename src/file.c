@@ -627,6 +627,7 @@ _XcursorWriteComment (XcursorFile	    *file,
 static XcursorImage *
 _XcursorResizeImage (XcursorImage *src, int size)
 {
+    int dest_y, dest_x;
     double scale = (double) size / src->size;
     XcursorImage *dest = XcursorImageCreate ((int) (src->width * scale), (int) (src->height * scale));
     if (!dest)
@@ -637,12 +638,12 @@ _XcursorResizeImage (XcursorImage *src, int size)
     dest->yhot = (int) (src->yhot * scale);
     dest->delay = src->delay;
 
-    for (int dest_y = 0; dest_y < dest->height; dest_y++)
+    for (dest_y = 0; dest_y < dest->height; dest_y++)
     {
 	int src_y = dest_y / scale;
 	XcursorPixel *src_row = src->pixels + src_y * src->width;
 	XcursorPixel *dest_row = dest->pixels + dest_y * dest->width;
-	for (int dest_x = 0; dest_x < dest->width; dest_x++)
+	for (dest_x = 0; dest_x < dest->width; dest_x++)
 	{
 	    int src_x = dest_x / scale;
 	    dest_row[dest_x] = src_row[src_x];
