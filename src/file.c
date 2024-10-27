@@ -679,11 +679,6 @@ XcursorXcFileLoadImage (XcursorFile *file, int size)
     if (image->size != (XcursorDim) size)
     {
 	XcursorImage *resized_image = _XcursorResizeImage (image, size);
-	if (!resized_image)
-	{
-	    XcursorImageDestroy (image);
-	    return NULL;
-	}
 	XcursorImageDestroy (image);
 	image = resized_image;
     }
@@ -723,26 +718,21 @@ XcursorXcFileLoadImages (XcursorFile *file, int size)
 	int toc = _XcursorFindImageToc (fileHeader, bestSize, n);
 	if (toc < 0)
 	    break;
-	image = _XcursorReadImage (file, fileHeader,
-							    toc);
+	image = _XcursorReadImage (file, fileHeader, toc);
 	if (!image)
 	    break;
 	if (image->size != (XcursorDim) size)
 	{
 	    XcursorImage *resized_image = _XcursorResizeImage (image, size);
-	    if (!resized_image)
-	    {
-		XcursorImageDestroy (image);
-	        break;
-	    }
-	    XcursorImageDestroy (image);
 	    image = resized_image;
+	    if (image == NULL)
+		break;
 	}
 	images->images[images->nimage] = image;
 	images->nimage++;
     }
     _XcursorFileHeaderDestroy (fileHeader);
-    if (images->nimage != nsize)
+    if (images != NULL && images->nimage != nsize)
     {
 	XcursorImagesDestroy (images);
 	images = NULL;
