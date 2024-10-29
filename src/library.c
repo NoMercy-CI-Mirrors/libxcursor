@@ -1,4 +1,5 @@
 /*
+ * Copyright © 2024 Thomas E. Dickey
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -329,6 +330,32 @@ XcursorLibraryLoadImage (const char *file, const char *theme, int size)
     return image;
 }
 
+static XcursorImages *
+_XcursorLibraryLoadImages (Display *dpy, const char *file)
+{
+    int		    size = XcursorGetDefaultSize (dpy);
+    char	    *theme = XcursorGetTheme (dpy);
+    XcursorBool     resized = XcursorGetResizable (dpy);
+    FILE	    *f = NULL;
+    XcursorImages   *images = NULL;
+
+    if (!file)
+	return NULL;
+
+    if (theme)
+	f = XcursorScanTheme (theme, file);
+    if (!f)
+	f = XcursorScanTheme ("default", file);
+    if (f != NULL && f != XCURSOR_SCAN_CORE)
+    {
+	images = _XcursorFileLoadImages (f, size, resized);
+	if (images)
+	    XcursorImagesSetName (images, file);
+	fclose (f);
+    }
+    return images;
+}
+
 XcursorImages *
 XcursorLibraryLoadImages (const char *file, const char *theme, int size)
 {
@@ -355,14 +382,13 @@ XcursorLibraryLoadImages (const char *file, const char *theme, int size)
 Cursor
 XcursorLibraryLoadCursor (Display *dpy, const char *file)
 {
-    int		    size = XcursorGetDefaultSize (dpy);
-    char	    *theme = XcursorGetTheme (dpy);
-    XcursorImages   *images = XcursorLibraryLoadImages (file, theme, size);
+    XcursorImages   *images;
     Cursor	    cursor;
 
     if (!file)
 	return 0;
 
+    images = _XcursorLibraryLoadImages (dpy, file);
     if (!images)
     {
 	int id = XcursorLibraryShape (file);
@@ -383,14 +409,13 @@ XcursorLibraryLoadCursor (Display *dpy, const char *file)
 XcursorCursors *
 XcursorLibraryLoadCursors (Display *dpy, const char *file)
 {
-    int		    size = XcursorGetDefaultSize (dpy);
-    char	    *theme = XcursorGetTheme (dpy);
-    XcursorImages   *images = XcursorLibraryLoadImages (file, theme, size);
+    XcursorImages   *images;
     XcursorCursors  *cursors;
 
     if (!file)
 	return NULL;
 
+    images = _XcursorLibraryLoadImages (dpy, file);
     if (!images)
     {
 	int id = XcursorLibraryShape (file);
