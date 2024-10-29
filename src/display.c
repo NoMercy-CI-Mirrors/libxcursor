@@ -337,6 +337,27 @@ XcursorGetDefaultSize (Display *dpy)
 }
 
 XcursorBool
+XcursorSetResizable (Display *dpy, XcursorBool flag)
+{
+    XcursorDisplayInfo	*info = _XcursorGetDisplayInfo (dpy);
+
+    if (!info)
+	return XcursorFalse;
+    info->resized_cursors = flag;
+    return XcursorTrue;
+}
+
+int
+XcursorGetResizable (Display *dpy)
+{
+    XcursorDisplayInfo	*info = _XcursorGetDisplayInfo (dpy);
+
+    if (!info)
+	return 0;
+    return info->resized_cursors;
+}
+
+XcursorBool
 XcursorSetTheme (Display *dpy, const char *theme)
 {
     XcursorDisplayInfo	*info = _XcursorGetDisplayInfo (dpy);
