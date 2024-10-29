@@ -113,7 +113,16 @@ Cursor
 _XcursorCreateFontCursor (Display *dpy, unsigned int shape);
 
 /* provide for XCURSOR_RESIZED */
+XcursorImage *
+_XcursorFileLoadImage (FILE *file, int size, XcursorBool resize);
+
 XcursorImages *
 _XcursorXcFileLoadImages (XcursorFile *file, int size, XcursorBool resize);
+
+XcursorImages *
+_XcursorFileLoadImages (FILE *file, int size, XcursorBool resize);
+
+XcursorImages *
+_XcursorFilenameLoadImages (const char *file, int size, XcursorBool resize);
 
 #endif /* _XCURSORINT_H_ */

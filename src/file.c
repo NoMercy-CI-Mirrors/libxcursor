@@ -687,10 +687,10 @@ _XcursorXcFileLoadImage (XcursorFile *file, int size, XcursorBool resize)
     return image;
 }
 
-XcursorImages *
-XcursorXcFileLoadImages (XcursorFile *file, int size)
+XcursorImage *
+XcursorXcFileLoadImage (XcursorFile *file, int size)
 {
-    return _XcursorXcFileLoadImages (file, size, XcursorFalse);
+    return _XcursorXcFileLoadImage (file, size, XcursorFalse);
 }
 
 XcursorImages *
@@ -747,10 +747,10 @@ _XcursorXcFileLoadImages (XcursorFile *file, int size, XcursorBool resize)
     return images;
 }
 
-XcursorImage *
-XcursorXcFileLoadImage (XcursorFile *file, int size)
+XcursorImages *
+XcursorXcFileLoadImages (XcursorFile *file, int size)
 {
-    return _XcursorXcFileLoadImage (file, size, XcursorFalse);
+    return _XcursorXcFileLoadImages (file, size, XcursorFalse);
 }
 
 XcursorImages *
@@ -994,6 +994,30 @@ _XcursorStdioFileInitialize (FILE *stdfile, XcursorFile *file)
 }
 
 XcursorImage *
+_XcursorFileLoadImage (FILE *file, int size, XcursorBool resize)
+{
+    XcursorFile	f;
+
+    if (!file)
+        return NULL;
+
+    _XcursorStdioFileInitialize (file, &f);
+    return _XcursorXcFileLoadImage (&f, size, resize);
+}
+
+XcursorImages *
+_XcursorFileLoadImages (FILE *file, int size, XcursorBool resize)
+{
+    XcursorFile	f;
+
+    if (!file)
+        return NULL;
+
+    _XcursorStdioFileInitialize (file, &f);
+    return _XcursorXcFileLoadImages (&f, size, resize);
+}
+
+XcursorImage *
 XcursorFileLoadImage (FILE *file, int size)
 {
     XcursorFile	f;
@@ -1089,6 +1113,23 @@ XcursorFilenameLoadImage (const char *file, int size)
     image = XcursorFileLoadImage (f, size);
     fclose (f);
     return image;
+}
+
+XcursorImages *
+_XcursorFilenameLoadImages (const char *file, int size, XcursorBool resize)
+{
+    FILE	    *f;
+    XcursorImages   *images;
+
+    if (!file || size < 0)
+        return NULL;
+
+    f = fopen (file, "r" FOPEN_CLOEXEC);
+    if (!f)
+	return NULL;
+    images = _XcursorFileLoadImages (f, size, resize);
+    fclose (f);
+    return images;
 }
 
 XcursorImages *
