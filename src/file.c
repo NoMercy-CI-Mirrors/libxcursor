@@ -1,4 +1,5 @@
 /*
+ * Copyright © 2024 Thomas E. Dickey
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -653,8 +654,8 @@ _XcursorResizeImage (XcursorImage *src, int size)
     return dest;
 }
 
-XcursorImage *
-XcursorXcFileLoadImage (XcursorFile *file, int size)
+static XcursorImage *
+_XcursorXcFileLoadImage (XcursorFile *file, int size, XcursorBool resize)
 {
     XcursorFileHeader	*fileHeader;
     XcursorDim		bestSize;
@@ -676,7 +677,7 @@ XcursorXcFileLoadImage (XcursorFile *file, int size)
     image = _XcursorReadImage (file, fileHeader, toc);
     _XcursorFileHeaderDestroy (fileHeader);
 
-    if (image->size != (XcursorDim) size)
+    if (resize && (image->size != (XcursorDim) size))
     {
 	XcursorImage *resized_image = _XcursorResizeImage (image, size);
 	XcursorImageDestroy (image);
@@ -688,6 +689,12 @@ XcursorXcFileLoadImage (XcursorFile *file, int size)
 
 XcursorImages *
 XcursorXcFileLoadImages (XcursorFile *file, int size)
+{
+    return _XcursorXcFileLoadImages (file, size, XcursorFalse);
+}
+
+XcursorImages *
+_XcursorXcFileLoadImages (XcursorFile *file, int size, XcursorBool resize)
 {
     XcursorFileHeader	*fileHeader;
     XcursorDim		bestSize;
@@ -721,7 +728,7 @@ XcursorXcFileLoadImages (XcursorFile *file, int size)
 	image = _XcursorReadImage (file, fileHeader, toc);
 	if (!image)
 	    break;
-	if (image->size != (XcursorDim) size)
+	if (resize && (image->size != (XcursorDim) size))
 	{
 	    XcursorImage *resized_image = _XcursorResizeImage (image, size);
 	    image = resized_image;
@@ -738,6 +745,12 @@ XcursorXcFileLoadImages (XcursorFile *file, int size)
 	images = NULL;
     }
     return images;
+}
+
+XcursorImage *
+XcursorXcFileLoadImage (XcursorFile *file, int size)
+{
+    return _XcursorXcFileLoadImage (file, size, XcursorFalse);
 }
 
 XcursorImages *

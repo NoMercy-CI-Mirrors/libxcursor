@@ -112,4 +112,8 @@ _XcursorCreateGlyphCursor(Display	    *dpy,
 Cursor
 _XcursorCreateFontCursor (Display *dpy, unsigned int shape);
 
+/* provide for XCURSOR_RESIZED */
+XcursorImages *
+_XcursorXcFileLoadImages (XcursorFile *file, int size, XcursorBool resize);
+
 #endif /* _XCURSORINT_H_ */
