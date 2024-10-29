@@ -1,4 +1,5 @@
 /*
+ * Copyright © 2024 Thomas E. Dickey
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -209,6 +210,20 @@ _XcursorGetDisplayInfo (Display *dpy)
 
     info->theme = NULL;
     info->theme_from_config = NULL;
+
+    /*
+     * Provide for making cursors resized to match the requested size
+     */
+    info->resized_cursors = XcursorFalse;
+    v = getenv ("XCURSOR_RESIZED");
+    if (!v)
+	v = XGetDefault (dpy, "Xcursor", "resized");
+    if (v)
+    {
+	i = _XcursorDefaultParseBool (v);
+	if (i >= 0)
+	    info->resized_cursors = i;
+    }
 
     /*
      * Get the desired theme

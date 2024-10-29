@@ -1,4 +1,5 @@
 /*
+ * Copyright © 2024 Thomas E. Dickey
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -86,6 +87,7 @@ typedef struct _XcursorDisplayInfo {
     XExtCodes			*codes;
     XcursorBool			has_render_cursor;
     XcursorBool			has_anim_cursor;
+    XcursorBool			resized_cursors;
     XcursorBool			theme_core;
     int				size;
     XcursorFontInfo		*fonts;
