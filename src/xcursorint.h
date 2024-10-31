@@ -125,24 +125,30 @@ _XcursorFileLoadImages (FILE *file, int size, XcursorBool resize);
 XcursorImages *
 _XcursorFilenameLoadImages (const char *file, int size, XcursorBool resize);
 
+XcursorImages *
+_XcursorShapeLoadImages (Display *dpy, unsigned int shape);
+
 #ifdef DEBUG_XCURSOR
 void     _XcursorTrace(const char *fmt, ...) __attribute__((format(printf,1,2)));
-unsigned _XcursorReturnUint(unsigned code);
-int      _XcursorReturnCode(int code);
 void    *_XcursorReturnAddr(void *addr);
+int      _XcursorReturnCode(int code);
+unsigned long _XcursorReturnLong(unsigned long code);
+unsigned _XcursorReturnUint(unsigned code);
 void     _XcursorReturnVoid(void);
 #define T_CALLED(func) "called: { " #func
 #define T_RETURN(form) "return: } %" #form "\n"
 #define enterFunc(params) _XcursorTrace params
-#define returnUint(code) return _XcursorReturnUint(code)
-#define returnCode(code) return _XcursorReturnCode(code)
 #define returnAddr(addr) return _XcursorReturnAddr(addr)
+#define returnCode(code) return _XcursorReturnCode(code)
+#define returnLong(code) return _XcursorReturnLong(code)
+#define returnUint(code) return _XcursorReturnUint(code)
 #define returnVoid()     do { _XcursorReturnVoid(); return; } while (0)
 #else
 #define enterFunc(params) /* nothing */
-#define returnUint(code) return (code)
-#define returnCode(code) return (code)
 #define returnAddr(addr) return (addr)
+#define returnCode(code) return (code)
+#define returnLong(code) return (code)
+#define returnUint(code) return (code)
 #define returnVoid()     return
 #endif
 

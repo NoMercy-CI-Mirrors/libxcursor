@@ -43,10 +43,10 @@ void _XcursorTrace(const char *fmt, ...)
     }
 }
 
-unsigned _XcursorReturnUint(unsigned code)
+void *_XcursorReturnAddr(void *addr)
 {
-    _XcursorTrace(T_RETURN(u), code);
-    return code;
+    _XcursorTrace(T_RETURN(p), addr);
+    return addr;
 }
 
 int _XcursorReturnCode(int code)
@@ -55,10 +55,16 @@ int _XcursorReturnCode(int code)
     return code;
 }
 
-void *_XcursorReturnAddr(void *addr)
+unsigned long _XcursorReturnLong(unsigned long code)
 {
-    _XcursorTrace(T_RETURN(p), addr);
-    return addr;
+    _XcursorTrace(T_RETURN(lu), code);
+    return code;
+}
+
+unsigned _XcursorReturnUint(unsigned code)
+{
+    _XcursorTrace(T_RETURN(u), code);
+    return code;
 }
 
 void _XcursorReturnVoid(void)

@@ -315,8 +315,11 @@ XcursorLibraryLoadImage (const char *file, const char *theme, int size)
     FILE	    *f = NULL;
     XcursorImage    *image = NULL;
 
+    enterFunc((T_CALLED(XcursorLibraryLoadImage) "(\"%s\",\"%s\", %d)\n",
+	      NonNull(file), NonNull(theme), size));
+
     if (!file)
-	return NULL;
+	returnAddr(NULL);
 
     if (theme)
 	f = XcursorScanTheme (theme, file);
@@ -327,7 +330,7 @@ XcursorLibraryLoadImage (const char *file, const char *theme, int size)
 	image = XcursorFileLoadImage (f, size);
 	fclose (f);
     }
-    return image;
+    returnAddr(image);
 }
 
 static XcursorImages *
@@ -362,8 +365,11 @@ XcursorLibraryLoadImages (const char *file, const char *theme, int size)
     FILE	    *f = NULL;
     XcursorImages   *images = NULL;
 
+    enterFunc((T_CALLED(XcursorLibraryLoadImages) "(\"%s\", \"%s\", %d)\n",
+	      NonNull(file), NonNull(theme), size));
+
     if (!file)
-	return NULL;
+	returnAddr(NULL);
 
     if (theme)
 	f = XcursorScanTheme (theme, file);
@@ -376,17 +382,20 @@ XcursorLibraryLoadImages (const char *file, const char *theme, int size)
 	    XcursorImagesSetName (images, file);
 	fclose (f);
     }
-    return images;
+    returnAddr(images);
 }
 
 Cursor
 XcursorLibraryLoadCursor (Display *dpy, const char *file)
 {
     XcursorImages   *images;
-    Cursor	    cursor;
+    Cursor	    cursor = 0;
+
+    enterFunc((T_CALLED(XcursorLibraryLoadCursor) "(%p, \"%s\")\n",
+	      (void*)dpy, NonNull(file)));
 
     if (!file)
-	return 0;
+	returnLong(cursor);
 
     images = _XcursorLibraryLoadImages (dpy, file);
     if (!images)
@@ -394,16 +403,17 @@ XcursorLibraryLoadCursor (Display *dpy, const char *file)
 	int id = XcursorLibraryShape (file);
 
 	if (id >= 0)
-	    return _XcursorCreateFontCursor (dpy, (unsigned) id);
-	else
-	    return 0;
+	    cursor = _XcursorCreateFontCursor (dpy, (unsigned) id);
     }
-    cursor = XcursorImagesLoadCursor (dpy, images);
-    XcursorImagesDestroy (images);
+    else
+    {
+	cursor = XcursorImagesLoadCursor (dpy, images);
+	XcursorImagesDestroy (images);
 #if defined HAVE_XFIXES && XFIXES_MAJOR >= 2
-    XFixesSetCursorName (dpy, cursor, file);
+	XFixesSetCursorName (dpy, cursor, file);
 #endif
-    return cursor;
+    }
+    returnLong(cursor);
 }
 
 XcursorCursors *
@@ -412,8 +422,11 @@ XcursorLibraryLoadCursors (Display *dpy, const char *file)
     XcursorImages   *images;
     XcursorCursors  *cursors;
 
+    enterFunc((T_CALLED(XcursorLibraryLoadCursors) "(%p, \"%s\")\n",
+	      (void*)dpy, NonNull(file)));
+
     if (!file)
-	return NULL;
+	returnAddr(NULL);
 
     images = _XcursorLibraryLoadImages (dpy, file);
     if (!images)
@@ -443,7 +456,7 @@ XcursorLibraryLoadCursors (Display *dpy, const char *file)
 	cursors = XcursorImagesLoadCursors (dpy, images);
 	XcursorImagesDestroy (images);
     }
-    return cursors;
+    returnAddr(cursors);
 }
 
 static const char _XcursorStandardNames[] =
@@ -543,50 +556,83 @@ XcursorImage *
 XcursorShapeLoadImage (unsigned int shape, const char *theme, int size)
 {
     unsigned int    id = shape >> 1;
+    XcursorImage   *result = NULL;
+
+    enterFunc((T_CALLED(XcursorShapeLoadImage) "(%u, \"%s\", %d)\n",
+	      shape, NonNull(theme), size));
 
     if (id < NUM_STANDARD_NAMES)
-	return XcursorLibraryLoadImage (STANDARD_NAME (id), theme, size);
-    else
-	return NULL;
+	result = XcursorLibraryLoadImage (STANDARD_NAME (id), theme, size);
+
+    returnAddr(result);
+}
+
+XcursorImages *
+_XcursorShapeLoadImages (Display *dpy, unsigned int shape)
+{
+    unsigned int    id = shape >> 1;
+    XcursorImages  *result = NULL;
+
+    enterFunc((T_CALLED(_XcursorShapeLoadImages) "(%p, %u)\n",
+	      (void*)dpy, shape));
+
+    if (id < NUM_STANDARD_NAMES)
+	result = _XcursorLibraryLoadImages (dpy, STANDARD_NAME (id));
+
+    returnAddr(result);
 }
 
 XcursorImages *
 XcursorShapeLoadImages (unsigned int shape, const char *theme, int size)
 {
     unsigned int    id = shape >> 1;
+    XcursorImages  *result = NULL;
+
+    enterFunc((T_CALLED(XcursorShapeLoadImages) "(%u, \"%s\", %d)\n",
+	      shape, NonNull(theme), size));
 
     if (id < NUM_STANDARD_NAMES)
-	return XcursorLibraryLoadImages (STANDARD_NAME (id), theme, size);
-    else
-	return NULL;
+	result = XcursorLibraryLoadImages (STANDARD_NAME (id), theme, size);
+
+    returnAddr(result);
 }
 
 Cursor
 XcursorShapeLoadCursor (Display *dpy, unsigned int shape)
 {
     unsigned int    id = shape >> 1;
+    Cursor          result = None;
+
+    enterFunc((T_CALLED(XcursorShapeLoadCursor) "(%p, %u)\n",
+	      (void*)dpy, shape));
 
     if (id < NUM_STANDARD_NAMES)
-	return XcursorLibraryLoadCursor (dpy, STANDARD_NAME (id));
-    else
-	return 0;
+	result = XcursorLibraryLoadCursor (dpy, STANDARD_NAME (id));
+
+    returnLong(result);
 }
 
 XcursorCursors *
 XcursorShapeLoadCursors (Display *dpy, unsigned int shape)
 {
     unsigned int    id = shape >> 1;
+    XcursorCursors *result = NULL;
+
+    enterFunc((T_CALLED(XcursorShapeLoadCursors) "(%p, %u)\n",
+	      (void*)dpy, shape));
 
     if (id < NUM_STANDARD_NAMES)
-	return XcursorLibraryLoadCursors (dpy, STANDARD_NAME (id));
-    else
-	return NULL;
+	result = XcursorLibraryLoadCursors (dpy, STANDARD_NAME (id));
+
+    returnAddr(result);
 }
 
 int
 XcursorLibraryShape (const char *library)
 {
     int	low, high;
+
+    enterFunc((T_CALLED(XcursorLibraryShape) "(%s)\n", NonNull(library)));
 
     low = 0;
     high = NUM_STANDARD_NAMES - 1;
@@ -595,7 +641,7 @@ XcursorLibraryShape (const char *library)
 	int mid = (low + high) >> 1;
 	int c = strcmp (library, STANDARD_NAME (mid));
 	if (c == 0)
-	    return (mid << 1);
+	    returnCode(mid << 1);
 	if (c > 0)
 	    low = mid;
 	else
@@ -607,5 +653,5 @@ XcursorLibraryShape (const char *library)
 	    return (low << 1);
 	low++;
     }
-    return -1;
+    returnCode(-1);
 }
