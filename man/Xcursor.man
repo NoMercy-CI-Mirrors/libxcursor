@@ -910,6 +910,7 @@ retain some level of source-file compatibility.
 .
 .SH AUTHORS
 Keith Packard
+Thomas E. Dickey
 .
 .SH SEE ALSO
 .na
