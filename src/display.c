@@ -347,7 +347,7 @@ XcursorSetResizable (Display *dpy, XcursorBool flag)
     return XcursorTrue;
 }
 
-int
+XcursorBool
 XcursorGetResizable (Display *dpy)
 {
     XcursorDisplayInfo	*info = _XcursorGetDisplayInfo (dpy);
@@ -401,7 +401,6 @@ XcursorGetThemeCore (Display *dpy)
     if (!info)
 	return XcursorFalse;
     return info->theme_core;
-
 }
 
 XcursorBool

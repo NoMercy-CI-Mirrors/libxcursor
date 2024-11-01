@@ -760,6 +760,20 @@ int XcursorGetDefaultSize (
 Gets the default cursor size.
 .
 .PS
+XcursorBool XcursorSetResizable (
+	Display 	*\fIdpy\fP,
+	XcursorBool 	 \fIresizable\fP)
+.PE
+Sets the current resizable-cursors state.
+.
+.PS
+XcursorBool XcursorGetResizable (
+	Display 	*\fIdpy\fP)
+.PE
+Gets the current resizable-cursors state.
+.
+.
+.PS
 XcursorBool XcursorSetTheme (
 	Display 	*\fIdpy\fP,
 	const char 	*\fItheme\fP)
