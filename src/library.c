@@ -48,6 +48,7 @@ XcursorLibraryPath (void)
 	path = getenv ("XCURSOR_PATH");
 	if (!path)
 	    path = XCURSORPATH;
+	traceOpts((T_OPTION(XCURSOR_PATH) ": %s\n", NonNull(path)));
     }
     return path;
 }

@@ -324,6 +324,7 @@ _XcursorLogDiscover (void)
 
 	if (getenv ("XCURSOR_DISCOVER"))
 	    log = True;
+	traceOpts((T_OPTION(XCURSOR_DISCOVER) ": %d\n", log));
     }
     return log;
 }

@@ -136,8 +136,10 @@ unsigned long _XcursorReturnLong(unsigned long code);
 unsigned _XcursorReturnUint(unsigned code);
 void     _XcursorReturnVoid(void);
 #define T_CALLED(func) "called: { " #func
+#define T_OPTION(opts) "option: : " #opts
 #define T_RETURN(form) "return: } %" #form "\n"
 #define enterFunc(params) _XcursorTrace params
+#define traceOpts(params) _XcursorTrace params
 #define returnAddr(addr) return _XcursorReturnAddr(addr)
 #define returnCode(code) return _XcursorReturnCode(code)
 #define returnLong(code) return _XcursorReturnLong(code)
@@ -145,6 +147,7 @@ void     _XcursorReturnVoid(void);
 #define returnVoid()     do { _XcursorReturnVoid(); return; } while (0)
 #else
 #define enterFunc(params) /* nothing */
+#define traceOpts(params) /* nothing */
 #define returnAddr(addr) return (addr)
 #define returnCode(code) return (code)
 #define returnLong(code) return (code)
