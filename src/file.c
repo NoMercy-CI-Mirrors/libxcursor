@@ -1051,7 +1051,7 @@ XcursorXcFileSave (XcursorFile		    *file,
      * Write the images
      */
     toc = 0;
-    for (n = 0; n < images->nimage; n++)
+    for (n = 0; n < nimage; n++)
     {
 	if (!_XcursorWriteImage (file, fileHeader, toc, images->images[n]))
 	    goto bail;
@@ -1061,7 +1061,7 @@ XcursorXcFileSave (XcursorFile		    *file,
     /*
      * Write the comments
      */
-    for (n = 0; n < comments->ncomment; n++)
+    for (n = 0; n < ncomment; n++)
     {
 	if (!_XcursorWriteComment (file, fileHeader, toc, comments->comments[n]))
 	    goto bail;
