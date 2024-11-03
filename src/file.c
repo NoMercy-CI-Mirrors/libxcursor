@@ -210,7 +210,7 @@ XcursorCommentsDestroy (XcursorComments *comments)
     int	n;
 
     if (!comments)
-        return;
+	return;
 
     for (n = 0; n < comments->ncomment; n++)
 	XcursorCommentDestroy (comments->comments[n]);
@@ -223,13 +223,13 @@ _XcursorReadUInt (XcursorFile *file, XcursorUInt *u)
     unsigned char   bytes[4];
 
     if (!file || !u)
-        return XcursorFalse;
+	return XcursorFalse;
 
     if ((*file->read) (file, bytes, 4) != 4)
-        return XcursorFalse;
+	return XcursorFalse;
 
     *u = ((XcursorUInt)(bytes[0]) << 0) |
-         ((XcursorUInt)(bytes[1]) << 8) |
+	 ((XcursorUInt)(bytes[1]) << 8) |
          ((XcursorUInt)(bytes[2]) << 16) |
          ((XcursorUInt)(bytes[3]) << 24);
     return XcursorTrue;
@@ -994,16 +994,24 @@ XcursorXcFileSave (XcursorFile		    *file,
 {
     XcursorFileHeader	*fileHeader;
     XcursorUInt		position;
-    int			n;
+    XcursorUInt		n;
     int			toc;
+    XcursorUInt		ncomment;
+    XcursorUInt		nimage;
 
     enterFunc((T_CALLED(XcursorXcFileSave) "(%p, %p, %p)\n",
 	      (void*)file, (const void*)comments, (const void*)images));
 
     if (!file || !comments || !images)
-        returnCode(XcursorFalse);
+	returnCode(XcursorFalse);
 
-    fileHeader = _XcursorFileHeaderCreate ((XcursorUInt) (comments->ncomment + images->nimage));
+    /*
+     * Caller may have tainted the counts.
+     */
+    ncomment = (XcursorUInt)(comments->ncomment > 0 ? comments->ncomment : 0);
+    nimage   = (XcursorUInt)(images->nimage     > 0 ? images->nimage : 0);
+
+    fileHeader = _XcursorFileHeaderCreate (ncomment + nimage);
     if (!fileHeader)
 	returnCode(XcursorFalse);
 
@@ -1015,7 +1023,7 @@ XcursorXcFileSave (XcursorFile		    *file,
      */
 
     toc = 0;
-    for (n = 0; n < images->nimage; n++)
+    for (n = 0; n < nimage; n++)
     {
 	fileHeader->tocs[toc].type = XCURSOR_IMAGE_TYPE;
 	fileHeader->tocs[toc].subtype = images->images[n]->size;
@@ -1024,7 +1032,7 @@ XcursorXcFileSave (XcursorFile		    *file,
 	toc++;
     }
 
-    for (n = 0; n < comments->ncomment; n++)
+    for (n = 0; n < ncomment; n++)
     {
 	fileHeader->tocs[toc].type = XCURSOR_COMMENT_TYPE;
 	fileHeader->tocs[toc].subtype = comments->comments[n]->comment_type;
@@ -1106,7 +1114,7 @@ _XcursorFileLoadImage (FILE *file, int size, XcursorBool resize)
     enterFunc((T_CALLED(_XcursorFileLoadImage) "(%p, %d, %d)\n", (void*)file, size, resize));
 
     if (!file)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     _XcursorStdioFileInitialize (file, &f);
     returnAddr(_XcursorXcFileLoadImage (&f, size, resize));
@@ -1120,7 +1128,7 @@ _XcursorFileLoadImages (FILE *file, int size, XcursorBool resize)
     enterFunc((T_CALLED(_XcursorFileLoadImages) "(%p, %d, %d)\n", (void*)file, size, resize));
 
     if (!file)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     _XcursorStdioFileInitialize (file, &f);
     returnAddr(_XcursorXcFileLoadImages (&f, size, resize));
@@ -1134,7 +1142,7 @@ XcursorFileLoadImage (FILE *file, int size)
     enterFunc((T_CALLED(XcursorFileLoadImage) "(%p, %d)\n", (void*)file, size));
 
     if (!file)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     _XcursorStdioFileInitialize (file, &f);
     returnAddr(XcursorXcFileLoadImage (&f, size));
@@ -1148,7 +1156,7 @@ XcursorFileLoadImages (FILE *file, int size)
     enterFunc((T_CALLED(XcursorFileLoadImages) "(%p, %d)\n", (void*)file, size));
 
     if (!file)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     _XcursorStdioFileInitialize (file, &f);
     returnAddr(XcursorXcFileLoadImages (&f, size));
@@ -1162,7 +1170,7 @@ XcursorFileLoadAllImages (FILE *file)
     enterFunc((T_CALLED(XcursorFileLoadAllImages) "(%p)\n", (void*)file));
 
     if (!file)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     _XcursorStdioFileInitialize (file, &f);
     returnAddr(XcursorXcFileLoadAllImages (&f));
@@ -1179,7 +1187,7 @@ XcursorFileLoad (FILE		    *file,
 	       (void*)file, (void*)commentsp, (void*)imagesp));
 
     if (!file || !commentsp || !imagesp)
-        returnCode(XcursorFalse);
+	returnCode(XcursorFalse);
 
     _XcursorStdioFileInitialize (file, &f);
     returnCode(XcursorXcFileLoad (&f, commentsp, imagesp));
@@ -1216,7 +1224,7 @@ XcursorFileSave (FILE *			file,
 	       (void*)file, (const void*)comments, (const void*)images));
 
     if (!file || !comments || !images)
-        returnCode(XcursorFalse);
+	returnCode(XcursorFalse);
 
     _XcursorStdioFileInitialize (file, &f);
     returnCode(XcursorXcFileSave (&f, comments, images) && fflush (file) != EOF);
@@ -1232,7 +1240,7 @@ XcursorFilenameLoadImage (const char *file, int size)
 	      NonNull(file), size));
 
     if (!file || size < 0)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     f = fopen (file, "r" FOPEN_CLOEXEC);
     if (!f)
@@ -1252,7 +1260,7 @@ _XcursorFilenameLoadImages (const char *file, int size, XcursorBool resize)
 	      NonNull(file), size, resize));
 
     if (!file || size < 0)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     f = fopen (file, "r" FOPEN_CLOEXEC);
     if (!f)
@@ -1272,7 +1280,7 @@ XcursorFilenameLoadImages (const char *file, int size)
 	      NonNull(file), size));
 
     if (!file || size < 0)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     f = fopen (file, "r" FOPEN_CLOEXEC);
     if (!f)
@@ -1292,7 +1300,7 @@ XcursorFilenameLoadAllImages (const char *file)
 	      NonNull(file)));
 
     if (!file)
-        returnAddr(NULL);
+	returnAddr(NULL);
 
     f = fopen (file, "r" FOPEN_CLOEXEC);
     if (!f)
@@ -1314,7 +1322,7 @@ XcursorFilenameLoad (const char		*file,
 	      NonNull(file), (void*)commentsp, (void*)imagesp));
 
     if (!file)
-        returnCode(XcursorFalse);
+	returnCode(XcursorFalse);
 
     f = fopen (file, "r" FOPEN_CLOEXEC);
     if (!f)
@@ -1334,7 +1342,7 @@ XcursorFilenameSaveImages (const char *file, const XcursorImages *images)
 	      NonNull(file), (const void*)images));
 
     if (!file || !images)
-        returnCode(XcursorFalse);
+	returnCode(XcursorFalse);
 
     f = fopen (file, "w" FOPEN_CLOEXEC);
     if (!f)
@@ -1357,7 +1365,7 @@ XcursorFilenameSave (const char		    *file,
 		(const void *) images));
 
     if (!file || !comments || !images) {
-        ret = XcursorFalse;
+	ret = XcursorFalse;
     } else {
 	f = fopen (file, "w" FOPEN_CLOEXEC);
 	if (!f) {
