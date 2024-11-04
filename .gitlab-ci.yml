@@ -46,7 +46,7 @@ check-commits:
   except:
     - master@xorg/lib/libXcursor
   variables:
-    GIT_DEPTH: 100
+    GIT_DEPTH: 10
   artifacts:
     reports:
       junit: results.xml
