@@ -766,7 +766,7 @@ _XcursorXcFileLoadImage (XcursorFile *file, int size, XcursorBool resize)
     image = _XcursorReadImage (file, fileHeader, toc);
     _XcursorFileHeaderDestroy (fileHeader);
 
-    if (resize && (image->size != (XcursorDim) size))
+    if (resize && image != NULL && (image->size != (XcursorDim) size))
     {
 	XcursorImage *resized_image = _XcursorResizeImage (image, size);
 	XcursorImageDestroy (image);
