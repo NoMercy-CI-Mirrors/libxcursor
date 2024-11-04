@@ -825,6 +825,7 @@ _XcursorXcFileLoadImages (XcursorFile *file, int size, XcursorBool resize)
 	if (resize && (image->size != (XcursorDim) size))
 	{
 	    XcursorImage *resized_image = _XcursorResizeImage (image, size);
+	    XcursorImageDestroy (image);
 	    image = resized_image;
 	    if (image == NULL)
 		break;
