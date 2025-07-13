@@ -73,7 +73,7 @@
 .el       .ds `` ``
 .ie \n(.g .ds '' \(rq
 .el       .ds '' ''
-.TH XCURSOR __libmansuffix__ __xorgversion__ "X Version 11"
+.TH XCURSOR __libmansuffix__ 2024-11-01 __xorgversion__
 .hy 0
 .SH NAME
 Xcursor \-
@@ -916,9 +916,10 @@ Thomas E. Dickey
 .
 .SH SEE ALSO
 .na
-XCreateRenderCursor(__libmansuffix__),
-XCreatePixmapCursor(__libmansuffix__), and
-XCreateFontCursor(__libmansuffix__)
+.BR XCreateRenderCursor (__libmansuffix__),
+.BR XCreatePixmapCursor (__libmansuffix__),
+and
+.BR XCreateFontCursor (__libmansuffix__)
 .ad
 .PP
 as well as
