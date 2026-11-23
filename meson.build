@@ -136,6 +136,7 @@ lib = library(
   include_directories: 'include',
   dependencies: [dep_xrender, dep_libxfixes, dep_libx11, dep_fixesproto],
   version: '1.0.2',
+  darwin_versions: [ '2.0.0', '2.2.0' ],
   install: true,
 )
 
